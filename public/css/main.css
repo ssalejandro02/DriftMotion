@@ -33,13 +33,17 @@ body {
 
 
 .navbar{
-    background-color: rgba(0, 0, 0, 0.8) !important;
+    background-color: rgb(255, 255, 255) !important;
     font-family: signikabold;
-    font-size: 1.5em;
+    font-size: 1.2em;
 }
 
 .nav-link{
-    color: dodgerblue !important;
+    color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.navbar-nav img {
+    width: 40%;
 }
 
 .custom-shadow {

@@ -10,25 +10,23 @@
         <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('css/main.css') }}">
         <script async
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1344652070596566"></script>
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1344652070596566">
+        </script>
     {% endblock %}
 </head>
 <body>
 {% block body %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            {#<a class="navbar-brand" href="{{path('index')}}"><img src="{{ asset('img/6392506.png') }}" alt="logo"
-                                                                  width="50"></a>#}
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">DriftMotion</a>
-                    </li>
+                    <a href="{{ path('app_post') }}">
+                        <img alt="logo" src="{{ asset('img/logo_web.png') }}">
+                    </a>
                 </ul>
                 <ul class="navbar-nav my-lg-0">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
@@ -39,23 +37,22 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 
-                                {#                                <a href="{{ path('app_user', {id: app.user.id}) }}" class="dropdown-item">#}
-                                {#                                    Perfil#}
-                                {#                                </a>#}
-                                <a class="dropdown-item" href="{{ path('app_logout') }}">
+                                {#                                <a href="{{ path('app_user', {id: app.user.id}) }}" class="dropdown-item">
+                                {#                                    Perfil #}
+                                {#                                </a> #}
+                                {# <a class="dropdown-item" href="{{ path('app_logout') }}">
                                     <i class="fa-solid fa-right-from-bracket"></i> Logout
-                                </a>
+                                </a> #}
                             </div>
-
                         </li>
                     {% else %}
                         <li>
-                            <a class="nav-link" href="{{path('userRegistration')}}">
+                            <a class="nav-link" href="{{ path('userRegistration') }}">
                                 <i class="fa-solid fa-user-plus"></i> Registrate
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{path('login')}}">
+                            <a class="nav-link" href="{{ path('login') }}">
                                 <i class="fa-solid fa-right-to-bracket"></i> Login
                             </a>
                         </li>
