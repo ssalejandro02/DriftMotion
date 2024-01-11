@@ -27,7 +27,9 @@ class PostType extends AbstractType
                 'label'    => 'photo',
                 'required' => 'false',
             ])
-            ->add('submit', SubmitType::class);
+            ->add('submit', SubmitType::class, [
+                'label' => 'Confirmar',
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
