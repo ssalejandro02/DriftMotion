@@ -18,8 +18,14 @@ class PostType extends AbstractType
             ->add('title')
             ->add('type', ChoiceType::class, [
                 'choices' => [
-                    'Opinion' => 'Opinión',
-                    'Humor'   => 'Humor',
+                    'Clásicos'    => 'Clásicos',
+                    'Comparativa' => 'Comparativa',
+                    'Curiosidad'  => 'Curiosidad',
+                    'Historia'    => 'Historia',
+                    'Humor'       => 'Humor',
+                    'Opinion'     => 'Opinión',
+                    'Tecnología'  => 'Tecnología',
+                    'Tuning'      => 'Tuning',
                 ],
             ])
             ->add('description')
