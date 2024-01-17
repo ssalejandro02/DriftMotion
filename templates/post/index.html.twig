@@ -14,7 +14,7 @@
             </div>
             <div class="col-md-12 my-2">
                 <div class="p-2 border bg-white">
-                    <div id="accordion">
+                    <div id="accordion" class="mb-3">
                         <button id="publishButton" class="btn text-white publishButton"
                                 type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
                                 aria-controls="collapseOne">
@@ -64,29 +64,29 @@
                             {% set  second_row = 'col-md-3' %}
                         {% endif %}
                         <div class="container">
-                            <div class="row border custom-shadow">
-                                <div class=" {{ first_row }}">
-                                    <div class="my-2 px-1 py-2">
-                                        <h4>
-                                            <a href="{{ path('postDetails', {id: post.id, url: post.url}) }}" style="color: black">
+                            <a href="{{ path('postDetails', {id: post.id, url: post.url}) }}"
+                               style="color: black; text-decoration: none;">
+                                <div class="row border custom-shadow">
+                                    <div class="{{ first_row }}">
+                                        <div class="my-2 px-1 py-2">
+                                            <h4>
                                                 {{ post.title }}
-                                            </a>
-                                        </h4>
-                                        <p>Fecha de publicación: {{ post.creation_date | date }}</p>
+                                            </h4>
+                                            <p>Fecha de publicación: {{ post.creation_date | date }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="{{ second_row }} my-auto">
+                                        {% if post.file != null %}
+                                            <img src="{{ asset('uploads/files/' ~ post.file) }}" alt="Not found"
+                                                 width="100%">
+                                        {% endif %}
                                     </div>
                                 </div>
-                                <div class="{{ second_row }} my-auto">
-                                    {% if post.file != null %}
-                                        <img src="{{ asset('uploads/files/' ~ post.file) }}" alt="Not found"
-                                             width="100%">
-                                    {% endif %}
-                                </div>
-
-                            </div>
+                            </a>
                         </div>
                         <hr>
                     {% else %}
-                        <div class="alert alert-warning"><Strong>No hay ningún post,¡sé el primero!</Strong></div>
+                        <div class="alert alert-warning">No hay ningún post, ¡sé el primero!</div>
                     {% endfor %}
                     <div class="row">
                         <div class="col-md-12 d-flex justify-content-center">
