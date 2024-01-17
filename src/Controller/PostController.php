@@ -33,19 +33,22 @@ class PostController extends AbstractController
         ]);
     }*/
 
-    #[Route('/', name: 'app_post')]
+    #[Route('/', name: 'index')]
     public function index(Request $request, SluggerInterface $slugger, PaginatorInterface $paginator): Response
     {
         $post = new Post();
         $query = $this->em->getRepository(Post::class)->findAllPosts();
 
         $pagination = $paginator->paginate(
-            $query, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            2 /*limit per page*/
+            // Query NOT result
+            $query,
+            // Request with page number
+            $request->query->getInt('page', 1),
+            // Limit per page
+            5
         );
 
-        $form = $this->CreateForm(PostType::class, $post);
+        $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -70,12 +73,17 @@ class PostController extends AbstractController
             }
 
             $post->setUrl($url);
-            $user = $this->em->getRepository(User::class)->findOneBy(['id' => 1]);
+
+            // Currently authenticated user
+            $user = $this->getUser();
+
+            // Associate the post to the current user
             $post->setUser($user);
+
             $this->em->persist($post);
             $this->em->flush();
 
-            return $this->redirectToRoute('app_post');
+            return $this->redirectToRoute('index');
         }
 
         return $this->render('post/index.html.twig', [
