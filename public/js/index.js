@@ -34,17 +34,47 @@ $('.add_favorite').click(function () {
     })
 })
 
-$('#delete').click(function (){
-    var post_id = $(this).attr("data-id")
+$('#delete').click(function () {
     Swal.fire({
         title: '¿Deseas eliminar el Post?',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
         confirmButtonText: 'Eliminar'
     }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-            window.location.href = Routing.generate('postDelete', { id: post_id })
+            var deleteUrl = $(this).data("url");
+
+            $.ajax({
+                url: deleteUrl,
+                type: 'POST',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Eliminado',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = '/';
+                        })
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error'
+                        })
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un problema al intentar eliminar el post.',
+                        icon: 'error'
+                    })
+                }
+            })
         }
     })
 })
