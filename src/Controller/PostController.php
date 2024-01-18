@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PostController extends AbstractController
 {
@@ -97,5 +98,21 @@ class PostController extends AbstractController
     {
         return $this->render('post/post-details.html.twig', ['post' => $post]);
     }
+
+    #[Route('/post/delete/{id}', name: 'postDelete')]
+    public function deletePost($id): JsonResponse
+    {
+        $post = $this->em->getRepository(Post::class)->find($id);
+
+        if (!$post) {
+            return new JsonResponse(['success' => false, 'message' => 'No se encontró el post con el id: ' . $id]);
+        }
+
+        $this->em->remove($post);
+        $this->em->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente.']);
+    }
+
 }
 
