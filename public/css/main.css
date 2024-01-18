@@ -58,6 +58,10 @@ footer {
     width: 40%;
 }
 
+.logoWebPhone {
+    width: 80%
+}
+
 .custom-shadow {
     -webkit-box-shadow: 6px 6px 11px -5px rgba(0,0,0,0.53);
     -moz-box-shadow: 6px 6px 11px -5px rgba(0,0,0,0.53);
