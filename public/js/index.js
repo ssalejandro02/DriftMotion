@@ -1,34 +1,47 @@
-$('.add_favorite').click(function () {
-    var favorite = event.target;
-    post_id = favorite.id;
+$('.add_favorite').click(function (event) {
+    var favorite = event.target
+    post_id = favorite.id
+
+    var url = $(this).data('url')
 
     Swal.fire({
         title: 'Agregar a favoritos?',
         showCancelButton: true,
-        confirmButtonText: '¡Sí,Agregalo!',
+        confirmButtonText: '¡Sí, Agrégalo!',
         cancelButtonText: 'No, cancelar!',
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
                 type: 'POST',
-                url: Routing.generate('postSave', { id: post_id }),
-                data: ({post_id: post_id}),
+                url: url,
+                data: { post_id: post_id },
                 async: true,
-                dataType: "json",
-                success: function (data) {
-                    Swal.fire(
-                        '¡Agregado!',
-                        'Ahora este post está en tus favoritos',
-                        'success'
-                    )
-                }
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Agregado',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = '/'
+                        })
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error'
+                        })
+                    }
+                },
             })
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-            document.getElementById(user_id).checked = !clase.checked;
             Swal.fire(
-                'Cancelado',
-                'No se ha agregado a favoritos',
-                'error'
+              'Cancelado',
+              'No se ha agregado a favoritos',
+              'error'
             )
         }
     })
