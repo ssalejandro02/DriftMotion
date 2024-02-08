@@ -42,6 +42,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Interaction::class)]
     private Collection $interactions;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favorite::class)]
+    private Collection $favorites;
+
     /**
      * @param $id
      * @param $email
@@ -58,6 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->description = $description;
         $this->posts = new ArrayCollection();
         $this->interactions = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -208,6 +212,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($interaction->getUser() === $this) {
                 $interaction->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): static
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            // set the owning side to null (unless already changed)
+            if ($favorite->getUser() === $this) {
+                $favorite->setUser(null);
             }
         }
 

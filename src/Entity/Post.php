@@ -41,6 +41,9 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Interaction::class, orphanRemoval: true)]
     private Collection $interactions;
 
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: Favorite::class, orphanRemoval: true)]
+    private Collection $favorites;
+
     /**
      * @param $title
      * @param $type
@@ -57,6 +60,7 @@ class Post
         $this->creation_date = new \DateTime();
         $this->url = $url;
         $this->interactions = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -172,6 +176,36 @@ class Post
             // set the owning side to null (unless already changed)
             if ($interaction->getPost() === $this) {
                 $interaction->setPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favorite>
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): static
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites->add($favorite);
+            $favorite->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): static
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            // set the owning side to null (unless already changed)
+            if ($favorite->getPost() === $this) {
+                $favorite->setPost(null);
             }
         }
 
