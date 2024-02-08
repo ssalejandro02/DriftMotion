@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\User;
+use App\Entity\Favorite;
 use App\Form\PostType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -96,7 +97,12 @@ class PostController extends AbstractController
     #[Route('/post/details/{id}', name: 'postDetails')]
     public function postDetails(Post $post)
     {
-        return $this->render('post/post-details.html.twig', ['post' => $post]);
+        $isInFavorites = $this->isPostInFavorites($this->getUser(), $post);
+
+        return $this->render('post/post-details.html.twig', [
+            'post' => $post,
+            'isInFavorites' => $isInFavorites,
+        ]);
     }
 
     #[Route('/post/delete/{id}', name: 'postDelete')]
@@ -114,5 +120,63 @@ class PostController extends AbstractController
         return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente.']);
     }
 
+    #[Route('/post/details/{id}/addFavorite', name: 'postAddFavorite')]
+    public function addToFavorites($id): JsonResponse
+    {
+        $user = $this->getUser();
+
+        $post = $this->em->getRepository(Post::class)->find($id);
+
+        if (!$post) {
+            return new JsonResponse(['success' => false, 'message' => 'Post no encontrado']);
+        }
+
+        $isFavorite = $this->em->getRepository(Favorite::class)->findOneBy(['user' => $user, 'post' => $post]);
+
+        if ($isFavorite) {
+            return new JsonResponse(['success' => false, 'message' => 'Este post ya está en favoritos']);
+        }
+
+        $favorite = new Favorite();
+        $favorite->setUser($user);
+        $favorite->setPost($post);
+
+        $this->em->persist($favorite);
+        $this->em->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'Post agregado a favoritos']);
+    }
+
+    #[Route('/post/details/{id}/removeFavorite', name: 'postDelFavorite')]
+    public function removeFavorite(Request $request, $id): JsonResponse
+    {
+        $user = $this->getUser();
+
+        $post = $this->em->getRepository(Post::class)->find($id);
+
+        if (!$post) {
+            return new JsonResponse(['success' => false, 'message' => 'Post no encontrado']);
+        }
+
+        $favoriteRepository = $this->em->getRepository(Favorite::class);
+        $favorite = $favoriteRepository->findOneBy(['user' => $user, 'post' => $post]);
+
+        if (!$favorite) {
+            return new JsonResponse(['success' => false, 'message' => 'Este post no está en favoritos']);
+        }
+
+        $this->em->remove($favorite);
+        $this->em->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'Post eliminado de favoritos']);
+    }
+
+    private function isPostInFavorites($user, $post)
+    {
+        $favoriteRepository = $this->em->getRepository(Favorite::class);
+        $isInFavorites = $favoriteRepository->findOneBy(['user' => $user, 'post' => $post]);
+
+        return $isInFavorites !== null;
+    }
 }
 
