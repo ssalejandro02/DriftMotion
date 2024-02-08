@@ -26,7 +26,7 @@ $('.add_favorite').click(function (event) {
                             timer: 2500,
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = '/'
+                            window.location.href = '/post/details/' + post_id
                         })
                     } else {
                         Swal.fire({
