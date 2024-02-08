@@ -193,3 +193,15 @@ footer {
     color: #fff;
     border-color: #007bff;
 }
+
+.buttonStar {
+    background-color: transparent;
+    border: 1px solid transparent;
+    font-size: 1.5em;
+}
+
+.deletePost {
+    background-color: transparent;
+    border: 1px solid transparent;
+    font-size: 1.5em;
+}

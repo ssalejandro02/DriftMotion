@@ -1,9 +1,143 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PostController!{% endblock %}
+{% block title %}{{ parent() }} - {{ post.title }}{% endblock %}
 
 {% block body %}
-    <div class="container">
-        {{ dump('hola') }}
+    {{ parent() }}
+    <div class="container my-2  bg-white">
+        <!--    ocultar en sm-->
+        <div class="d-none d-md-block bg-white p-3">
+            <div class="text-center mx-3">
+                <div class="alert-dark mx-auto">
+                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                        {% if isInFavorites %}
+                            {# Mostrar el botón de eliminar de favoritos si el post está en favoritos #}
+                            <button class="remove_favorite buttonStar"
+                                    data-url="{{ path('postDelFavorite', {'id': post.id}) }}">
+                                <span style="color: orange">
+                                    <i class="fa-solid fa-star" id="{{ post.id }}"></i>
+                                </span>
+                            </button>
+                        {% else %}
+                            {# Mostrar el botón de agregar a favoritos si el post no está en favoritos #}
+                            <button class="add_favorite buttonStar"
+                                    data-url="{{ path('postAddFavorite', {'id': post.id}) }}">
+                                <span style="color: orange">
+                                    <i class="fa fa-star-o" id="{{ post.id }}"></i>
+                                </span>
+                            </button>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if app.user == post.user %}
+                        <button id="delete" class="deletePost"
+                                data-id="{{ post.id }}" data-url="{{ path('postDelete', {'id': post.id}) }}">
+                            <span style="color: red"><i id="{{ post.id }}" class="fa-solid fa-trash-can"></i></span>
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="my-2">
+                    <span class="alert-success py-1 mx-auto d-block"> {{ post.type }}</span>
+                </div>
+                <hr>
+                <div>
+                    <h1> {{ post.title }} </h1>
+                </div>
+                <div>
+                    <p>Fecha de Publicación: {{ post.creationdate | date }}</p>
+                </div>
+            </div>
+            <div class="my-4 text-center">
+                {% if post.file != null %}
+                    <img class="w-75 mx-auto" src="{{ asset('uploads/files/' ~ post.file) }}">
+                {% endif %}
+            </div>
+            <div class="text-justify w-75 mx-auto">
+                {{ post.description | nl2br | raw }}
+            </div>
+        </div>
+        <!--    ocultar en MD-->
+        <div class="d-block d-sm-block d-md-none  my-2">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="p-2 border bg-white">
+                        <div class="text-center mx-3">
+                            <div class="alert-dark mx-auto">
+                                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                                    {% if isInFavorites %}
+                                        {# Mostrar el botón de eliminar de favoritos si el post está en favoritos #}
+                                        <button class="remove_favorite buttonStar"
+                                                data-url="{{ path('postDelFavorite', {'id': post.id}) }}">
+                                            <span style="color: orange">
+                                                <i class="fa-solid fa-star" id="{{ post.id }}"></i>
+                                            </span>
+                                        </button>
+                                    {% else %}
+                                        {# Mostrar el botón de agregar a favoritos si el post no está en favoritos #}
+                                        <button class="add_favorite buttonStar"
+                                                data-url="{{ path('postAddFavorite', {'id': post.id}) }}">
+                                            <span style="color: orange">
+                                                <i class="fa fa-star-o" id="{{ post.id }}"></i>
+                                            </span>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if app.user == post.user %}
+                                    <button id="delete" class="deletePost"
+                                            data-id="{{ post.id }}" data-url="{{ path('postDelete', {'id': post.id}) }}">
+                                        <span style="color: red"><i id="{{ post.id }}" class="fa-solid fa-trash-can"></i></span>
+                                    </button>
+                                {% endif %}
+                            </div>
+                            <div class="my-2">
+                                <span class="alert-success py-1 mx-auto d-block"> {{ post.type }}</span>
+                            </div>
+                            <hr>
+                            <div>
+                                <h4> {{ post.title }} </h4>
+                            </div>
+                            <div>
+                                <p>Fecha de Publicación: {{ post.creationdate | date }}</p>
+                            </div>
+                        </div>
+                        <div class="my-4 text-center">
+                            {% if post.file != null %}
+                                <img class="w-75 mx-auto" src="{{ asset('uploads/files/' ~ post.file) }}">
+                            {% endif %}
+                        </div>
+                        <div class="text-justify w-75 mx-auto">
+                            {{ post.description | raw }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    {# <div class="p-3 bg-white border rounded my-4">
+                        {{ form(interaction_form) }}
+                    </div> #}
+                {% else %}
+                    <div class="alert alert-dark my-4 border">Si deseas comentar, por favor
+                        <a href="{{ path('userRegistration') }}">Registrate</a>
+                        o
+                        <a href="{{ path('login') }}">inicia sesión</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+      $('.custom-file-input').on('change', function (event) {
+        var inputFile = event.currentTarget
+        $(inputFile).parent()
+          .find('.custom-file-label')
+          .html(inputFile.files[0].name)
+      })
+    </script>
 {% endblock %}
