@@ -47,6 +47,55 @@ $('.add_favorite').click(function (event) {
     })
 })
 
+$('.remove_favorite').click(function (event) {
+    var favorite = event.target
+    post_id = favorite.id
+
+    var url = $(this).data('url')
+
+    Swal.fire({
+        title: 'Eliminar de favoritos?',
+        showCancelButton: true,
+        confirmButtonText: '¡Sí, Elimínalo!',
+        cancelButtonText: 'No, cancelar!',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: { post_id: post_id },
+                async: true,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Eliminado',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.href = '/post/details/' + post_id
+                        })
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.message,
+                            icon: 'error'
+                        })
+                    }
+                },
+            })
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire(
+              'Cancelado',
+              'No se ha eliminado de favoritos',
+              'error'
+            )
+        }
+    })
+})
+
 $('#delete').click(function () {
     Swal.fire({
         title: '¿Deseas eliminar el Post?',
