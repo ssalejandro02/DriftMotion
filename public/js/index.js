@@ -1,7 +1,8 @@
 $('.add_favorite').click(function (event) {
   var favorite = event.target
-  post_id = favorite.id
-
+  var post_id = favorite.id
+  // Almacena la URL actual
+  var currentUrl = window.location.href
   var url = $(this).data('url')
 
   Swal.fire({
@@ -24,33 +25,36 @@ $('.add_favorite').click(function (event) {
               text: response.message,
               icon: 'success',
               timer: 2500,
-              showConfirmButton: false
+              showConfirmButton: false,
             }).then(() => {
-              window.location.href = '/post/details/' + post_id
+              window.location.href = currentUrl
             })
           } else {
             Swal.fire({
               title: 'Error',
               text: response.message,
-              icon: 'error'
+              icon: 'error',
             })
           }
         },
       })
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire(
-        'Cancelado',
-        'No se ha agregado a favoritos',
-        'error'
-      )
+      Swal.fire({
+        title: 'Cancelado',
+        text: 'No se ha agregado a favoritos',
+        icon: 'error',
+        timer: 2500,
+        showConfirmButton: false,
+      })
     }
   })
 })
 
 $('.remove_favorite').click(function (event) {
   var favorite = event.target
-  post_id = favorite.id
-
+  var post_id = favorite.id
+  // Almacena la URL actual
+  var currentUrl = window.location.href
   var url = $(this).data('url')
 
   Swal.fire({
@@ -73,25 +77,27 @@ $('.remove_favorite').click(function (event) {
               text: response.message,
               icon: 'success',
               timer: 2500,
-              showConfirmButton: false
+              showConfirmButton: false,
             }).then(() => {
-              window.location.href = '/post/details/' + post_id
+              window.location.href = currentUrl
             })
           } else {
             Swal.fire({
               title: 'Error',
               text: response.message,
-              icon: 'error'
+              icon: 'error',
             })
           }
         },
       })
     } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire(
-        'Cancelado',
-        'No se ha eliminado de favoritos',
-        'error'
-      )
+      Swal.fire({
+        title: 'Cancelado',
+        text: 'No se ha eliminado de favoritos',
+        icon: 'error',
+        timer: 2500,
+        showConfirmButton: false,
+      })
     }
   })
 })
@@ -132,8 +138,10 @@ $('#delete').click(function () {
         error: function () {
           Swal.fire({
             title: 'Error',
-            text: 'Hubo un problema al intentar eliminar el post.',
-            icon: 'error'
+            text: 'Hubo un problema al intentar eliminar el post',
+            icon: 'error',
+            timer: 2500,
+            showConfirmButton: false,
           })
         }
       })
