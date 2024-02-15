@@ -14,10 +14,7 @@ class Interaction
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?bool $user_favorite = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: false)]
     private ?string $comment = null;
 
     #[ORM\ManyToOne(inversedBy: 'interactions')]
@@ -28,21 +25,12 @@ class Interaction
     #[ORM\JoinColumn(nullable: false)]
     private ?Post $post = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function isUserFavorite(): ?bool
-    {
-        return $this->user_favorite;
-    }
-
-    public function setUserFavorite(?bool $user_favorite): static
-    {
-        $this->user_favorite = $user_favorite;
-
-        return $this;
     }
 
     public function getComment(): ?string
@@ -77,6 +65,18 @@ class Interaction
     public function setPost(?Post $post): static
     {
         $this->post = $post;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): static
+    {
+        $this->date = $date;
 
         return $this;
     }
