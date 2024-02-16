@@ -5,12 +5,14 @@ namespace App\Controller;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Entity\Favorite;
+use App\Entity\Interaction;
 use App\Form\PostType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -19,10 +21,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class PostController extends AbstractController
 {
     private $em;
+    private $requestStack;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, RequestStack $requestStack)
     {
         $this->em = $em;
+        $this->requestStack = $requestStack;
     }
 
     /*#[Route('/post/{id}', name: 'app_post')]
@@ -42,7 +46,7 @@ class PostController extends AbstractController
         $query = $this->em->getRepository(Post::class)->findAllPosts();
 
         $pagination = $paginator->paginate(
-            // Query NOT result
+        // Query NOT result
             $query,
             // Request with page number
             $request->query->getInt('page', 1),
@@ -95,13 +99,19 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/details/{id}', name: 'postDetails')]
-    public function postDetails(Post $post)
+    public function postDetails(Post $post, InteractionController $interactionController): Response
     {
         $isInFavorites = $this->isPostInFavorites($this->getUser(), $post);
+        $interactionForm = $interactionController->comment($this->requestStack->getCurrentRequest(), $post->getId());
+        $comments = $this->em->getRepository(Interaction::class)->findBy(
+            ['post' => $post],
+        );
 
         return $this->render('post/post-details.html.twig', [
-            'post' => $post,
-            'isInFavorites' => $isInFavorites,
+            'post'             => $post,
+            'isInFavorites'    => $isInFavorites,
+            'interaction_form' => $interactionForm->createView(),
+            'comments'         => $comments,
         ]);
     }
 

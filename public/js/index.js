@@ -148,3 +148,52 @@ $('#delete').click(function () {
     }
   })
 })
+
+$('.delete_comment').click(function () {
+  Swal.fire({
+    title: '¿Deseas eliminar el comentario?',
+    showCancelButton: true,
+    cancelButtonText: 'Cancelar',
+    confirmButtonText: 'Eliminar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Almacena la URL actual
+      var currentUrl = window.location.href
+      var deleteUrl = $(this).data('url')
+
+      $.ajax({
+        url: deleteUrl,
+        type: 'POST',
+        dataType: 'json',
+        success: function (response) {
+          if (response.success) {
+            Swal.fire({
+              title: 'Eliminado',
+              text: response.message,
+              icon: 'success',
+              timer: 2500,
+              showConfirmButton: false
+            }).then(() => {
+              window.location.href = currentUrl
+            })
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: response.message,
+              icon: 'error'
+            })
+          }
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al intentar eliminar el comentario',
+            icon: 'error',
+            timer: 2500,
+            showConfirmButton: false,
+          })
+        }
+      })
+    }
+  })
+})

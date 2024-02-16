@@ -205,3 +205,19 @@ footer {
     border: 1px solid transparent;
     font-size: 1.5em;
 }
+
+.submitCommentButton {
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(0, 212, 255, 1) 100%);
+    color: #ffffff;
+    width: 100%;
+}
+
+.submitCommentButton:hover {
+    color: #ffffff; /* Mantener el color del texto igual al color original */
+}
+
+.deleteComment {
+    background-color: transparent;
+    border: 1px solid transparent;
+    font-size: 1.2em;
+}

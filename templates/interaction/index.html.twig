@@ -1,0 +1,11 @@
+{% block body %}
+    <h4 class="mb-4"><u>Deja un Comentario</u></h4>
+    {{ form_start(interaction_form, {'attr': {'class': 'form'}}) }}
+    <div class="form-group">
+        {{ form_widget(interaction_form.comment, {'attr': {'class': 'form-control', 'placeholder': 'Escribe tu comentario'}}) }}
+    </div>
+    <div class="form-group">
+        {{ form_widget(interaction_form.submit, {attr:{'class':'btn submitCommentButton'}}) }}
+    </div>
+    {{ form_end(interaction_form) }}
+{% endblock %}

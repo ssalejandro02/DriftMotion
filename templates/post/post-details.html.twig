@@ -116,12 +116,36 @@
         <div class="row">
             <div class="col-md-12">
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    {# <div class="p-3 bg-white border rounded my-4">
-                        {{ form(interaction_form) }}
-                    </div> #}
+                    <div class="p-3 bg-white border rounded my-4 mx-auto w-75">
+                        {% include 'interaction/index.html.twig' %}
+                        <hr>
+                        {% if comments is not empty %}
+                            {% for comment in comments %}
+                                <div class="card mb-3">
+                                    <div class="card-body position-relative">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="card-title mb-0">{{ comment.user.email }}</h5>
+                                            {% if app.user == comment.user %}
+                                                <a class="text-danger delete_comment" data-url="{{ path('deleteComment',
+                                                    {'post_id': post.id, 'id': comment.id}) }}">
+                                                    <i class="fa fa-trash-o"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        <p class="card-text">{{ comment.comment }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info" role="alert">
+                                No hay comentarios aún
+                            </div>
+                        {% endif %}
+                    </div>
                 {% else %}
-                    <div class="alert alert-dark my-4 border">Si deseas comentar, por favor
-                        <a href="{{ path('userRegistration') }}">Registrate</a>
+                    <div class="alert alert-dark my-4 mx-auto w-75">
+                        Si deseas comentar, por favor
+                        <a href="{{ path('userRegistration') }}">Regístrate</a>
                         o
                         <a href="{{ path('login') }}">inicia sesión</a>
                     </div>
