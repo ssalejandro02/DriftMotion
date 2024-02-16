@@ -99,7 +99,8 @@ class PostController extends AbstractController
     }
 
     #[Route('/post/details/{id}', name: 'postDetails')]
-    public function postDetails(Post $post, InteractionController $interactionController): Response
+    public function postDetails(Request            $request, Post $post, InteractionController $interactionController,
+                                PaginatorInterface $paginator): Response
     {
         $isInFavorites = $this->isPostInFavorites($this->getUser(), $post);
         $interactionForm = $interactionController->comment($this->requestStack->getCurrentRequest(), $post->getId());
@@ -107,11 +108,20 @@ class PostController extends AbstractController
             ['post' => $post],
         );
 
+        $pagination = $paginator->paginate(
+        // Query a paginar
+            $comments,
+            // Número de página por defecto
+            $request->query->getInt('page', 1),
+            // Número de elementos por página
+            8
+        );
+
         return $this->render('post/post-details.html.twig', [
             'post'             => $post,
             'isInFavorites'    => $isInFavorites,
             'interaction_form' => $interactionForm->createView(),
-            'comments'         => $comments,
+            'comments'         => $pagination,
         ]);
     }
 
