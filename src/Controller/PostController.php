@@ -104,6 +104,12 @@ class PostController extends AbstractController
     {
         $isInFavorites = $this->isPostInFavorites($this->getUser(), $post);
         $interactionForm = $interactionController->comment($this->requestStack->getCurrentRequest(), $post->getId());
+
+        // Redirige a la página de detalles del post después de comentar
+        if ($interactionForm->isSubmitted() && $interactionForm->isValid()) {
+            return $this->redirectToRoute('postDetails', ['id' => $post->getId()]);
+        }
+
         $comments = $this->em->getRepository(Interaction::class)->findBy(
             ['post' => $post],
         );
