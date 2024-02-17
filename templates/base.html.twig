@@ -47,9 +47,15 @@
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa-solid fa-user"></i>
                             </a>
-                            <div class="dropdown-menu text-center" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a href="{{ path('index', {id: app.user.email}) }}" class="dropdown-item">
                                     <i class="fa-solid fa-user" aria-hidden="true"></i> Perfil
+                                </a>
+                                <a {#href="{{ path('index', {id: app.user.email}) }}" #}class="dropdown-item">
+                                    <i class="fa fa-clipboard" aria-hidden="true"></i> Mis Posts
+                                </a>
+                                <a {#href="{{ path('index', {id: app.user.email}) }}"#} class="dropdown-item">
+                                    <i class="fa-solid fa-star" aria-hidden="true"></i> Favoritos
                                 </a>
                                 <a class="dropdown-item" href="{{ path('logout') }}">
                                     <i class="fa-solid fa-right-from-bracket"></i> Logout
