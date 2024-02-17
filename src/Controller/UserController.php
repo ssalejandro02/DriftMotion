@@ -58,6 +58,12 @@ class UserController extends AbstractController
 
         $favorites = $this->em->getRepository(Favorite::class)->findBy(['user' => $user]);
 
+        // Configuración de caché para evitar que la página se almacene en caché
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '');
+
         $favoritesPaginated = $paginator->paginate(
             $favorites,
             $request->query->getInt('page', 1),
@@ -66,6 +72,6 @@ class UserController extends AbstractController
 
         return $this->render('favorite/index.html.twig', [
             'favorites' => $favoritesPaginated,
-        ]);
+        ], $response);
     }
 }
