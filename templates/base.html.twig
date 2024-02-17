@@ -54,7 +54,7 @@
                                 <a {#href="{{ path('index', {id: app.user.email}) }}" #}class="dropdown-item">
                                     <i class="fa fa-clipboard" aria-hidden="true"></i> Mis Posts
                                 </a>
-                                <a {#href="{{ path('index', {id: app.user.email}) }}"#} class="dropdown-item">
+                                <a href="{{ path('userFavorites') }}" class="dropdown-item">
                                     <i class="fa-solid fa-star" aria-hidden="true"></i> Favoritos
                                 </a>
                                 <a class="dropdown-item" href="{{ path('logout') }}">

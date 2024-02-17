@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Favorite;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +48,24 @@ class UserController extends AbstractController
 
         return $this->render('user/index.html.twig', [
             'registration_form' => $registration_form->createView(),
+        ]);
+    }
+
+    #[Route('/user/favorites', name: 'userFavorites')]
+    public function userFavorites(Request $request, PaginatorInterface $paginator): Response
+    {
+        $user = $this->getUser();
+
+        $favorites = $this->em->getRepository(Favorite::class)->findBy(['user' => $user]);
+
+        $favoritesPaginated = $paginator->paginate(
+            $favorites,
+            $request->query->getInt('page', 1),
+            5
+        );
+
+        return $this->render('favorite/index.html.twig', [
+            'favorites' => $favoritesPaginated,
         ]);
     }
 }

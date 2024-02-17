@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container my-2">
+        <div class="row">
+            <div class="col-md-12 my-2">
+                <div class="p-3 border bg-light text-center">
+                    <h2 class="my-3 font-weight-bold"><u>MIS FAVORITOS</u></h2>
+                </div>
+            </div>
+            <div class="col-md-12 my-2">
+                <div class="p-2 border bg-white">
+                    {% for favorite in favorites %}
+                        {% if favorite.post.file == null %}
+                            {% set first_row = 'col-md-12' %}
+                            {% set second_row = 'd-none' %}
+                        {% else %}
+                            {% set first_row = 'col-md-9' %}
+                            {% set second_row = 'col-md-3' %}
+                        {% endif %}
+
+                        {# Agrega margen superior solo si es la primera publicación #}
+                        <div class="container{% if loop.first %} mt-4{% endif %}">
+                            <a href="{{ path('postDetails', {id: favorite.post.id, url: favorite.post.url}) }}"
+                               style="color: black; text-decoration: none;">
+                                <div class="row border custom-shadow">
+                                    <div class="{{ first_row }}">
+                                        <div class="my-2 px-1 py-2">
+                                            <h4>
+                                                {{ favorite.post.title }}
+                                            </h4>
+                                            <p>Fecha de publicación: {{ favorite.post.getCreationDate() | date }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="{{ second_row }} my-auto">
+                                        {% if favorite.post.file != null %}
+                                            <img src="{{ asset('uploads/files/' ~ favorite.post.file) }}" alt="Not found"
+                                                 width="100%">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <hr>
+                    {% else %}
+                        <div class="alert alert-warning">No hay ningún post en favoritos</div>
+                    {% endfor %}
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <div class="navigation">
+                                {% include 'pagination/paginationFavorites.html.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
