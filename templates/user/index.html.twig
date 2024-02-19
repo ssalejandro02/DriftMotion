@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     {{ parent() }}
-    <div class="container mt-5">
+    <div class="container mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow">
@@ -18,21 +18,33 @@
                         </div>
                         <div class="form-group input-group">
                             <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            {{ form_widget(registration_form.username, {attr:{'class':'form-control', 'placeholder':'Nombre de usuario'}}) }}
+                        </div>
+                        <div class="form-group input-group">
+                            <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
                             </div>
                             {{ form_widget(registration_form.password, {attr:{'class':'form-control', 'placeholder':'Ingresa aquí tu contraseña'}}) }}
                         </div>
                         <div class="form-group input-group">
                             <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            {{ form_widget(registration_form.password_repeat, {attr:{'class':'form-control', 'placeholder':'Repita la contraseña'}}) }}
+                        </div>
+                        <div class="form-group input-group">
+                            <div class="input-group-prepend">
                                 <span class="input-group-text"> <i class="fa fa-camera"></i> </span>
                             </div>
-                            {{ form_widget(registration_form.photo, {attr:{'class':'form-control'}}) }}
+                            {{ form_widget(registration_form.photo, {attr:{'class':'form-control input-style'}}) }}
                         </div>
                         <div class="form-group input-group">
                             {{ form_widget(registration_form.description, {attr:{'class':'form-control', 'placeholder':'Cuentanos sobre ti'}}) }}
                         </div>
                         <div class="d-grid gap-2">
-                            {{ form_widget(registration_form.Submit, {attr:{'class':'btn btn-success btn-block'}}) }}
+                            {{ form_widget(registration_form.submit, {attr:{'class':'btn btn-success btn-block'}}) }}
                         </div>
                         {{ form_end(registration_form) }}
                     </div>
@@ -45,4 +57,65 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/index.js') }}"></script>
+    <script>
+      $('.custom-file-input').on('change', function (event) {
+        var inputFile = event.currentTarget
+        $(inputFile).parent()
+          .find('.custom-file-label')
+          .html(inputFile.files[0].name)
+      })
+
+      // Validación de contraseña repetida
+      $('#{{ registration_form.password.vars.id }}').on('input', function () {
+        var password = $(this).val()
+        var repeatPassword = $('#{{ registration_form.password_repeat.vars.id }}').val()
+
+        if (password !== repeatPassword) {
+          $('#{{ registration_form.password_repeat.vars.id }}').get(0).setCustomValidity('Las contraseñas no coinciden.')
+        } else {
+          $('#{{ registration_form.password_repeat.vars.id }}').get(0).setCustomValidity('')
+        }
+      })
+
+      $('#{{ registration_form.password_repeat.vars.id }}').on('input', function () {
+        var password = $('#{{ registration_form.password.vars.id }}').val()
+        var repeatPassword = $(this).val()
+
+        if (password !== repeatPassword) {
+          $(this).get(0).setCustomValidity('Las contraseñas no coinciden.')
+        } else {
+          $(this).get(0).setCustomValidity('')
+        }
+      })
+
+      // Si el registro es correcto
+      {% if app.flashes('success') %}
+      Swal.fire({
+        icon: 'success',
+        title: '¡Registro confirmado!',
+        text: 'Tu cuenta ha sido registrada con éxito.',
+        timer: 2500,
+        showConfirmButton: false,
+      }).then(() => {
+        window.location.href = '/login'
+      })
+      {% endif %}
+
+      // Errores
+      {% for flashMessage in app.flashes('error') %}
+      $(document).ready(function () {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '{{ flashMessage }}',
+          timer: 2500,
+          showConfirmButton: false,
+        })
+      })
+      {% endfor %}
+    </script>
 {% endblock %}

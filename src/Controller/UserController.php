@@ -9,10 +9,14 @@ use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Mime\MimeTypes;
+use Symfony\Component\Mime\Exception\InvalidArgumentException;
 
 class UserController extends AbstractController
 {
@@ -27,24 +31,72 @@ class UserController extends AbstractController
     }
 
     #[Route('/registration', name: 'userRegistration')]
-    public function userRegistration(Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function userRegistration(Request                     $request, SluggerInterface $slugger,
+                                     UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
         $registration_form = $this->createForm(UserType::class, $user);
         $registration_form->handleRequest($request);
 
-        if ($registration_form->isSubmitted() && $registration_form->isValid()) {
-            $plaintextPassword = $registration_form->get('password')->getData();
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user,
-                $plaintextPassword
-            );
-            $user->setPassword($hashedPassword);
-            $user->setRoles(['ROLE_USER']);
-            $this->em->persist($user);
-            $this->em->flush();
+        $existingUserByEmail = $this->em->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+        $existingUserByUsername = $this->em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
 
-            return $this->redirectToRoute('userRegistration');
+        if ($existingUserByEmail) {
+            $this->addFlash('error', '¡El correo electrónico ya está registrado!');
+        } elseif ($existingUserByUsername) {
+            $this->addFlash('error', '¡El nombre de usuario ya está registrado!');
+        } else {
+            if ($registration_form->isSubmitted() && $registration_form->isValid()) {
+                $file = $registration_form->get('photo')->getData();
+
+                if ($file) {
+                    $mimeTypes = new MimeTypes();
+                    $allowedImageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+                    try {
+                        $fileMimeType = $mimeTypes->guessMimeType($file->getRealPath());
+
+                        if (!in_array($fileMimeType, $allowedImageMimeTypes)) {
+                            $this->addFlash('error', 'Solo se permiten archivos de imagen (JPEG, PNG, GIF).');
+
+                            return $this->redirectToRoute('userRegistration'); // Redirecciona si hay un error
+                        }
+
+                        $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                        $safeFileName = $slugger->slug($originalFileName);
+                        $newFileName = $safeFileName . '-' . uniqid() . '.' . $file->guessExtension();
+
+                        try {
+                            $file->move(
+                                $this->getParameter('photos_directory'),
+                                $newFileName
+                            );
+
+                            $user->setPhoto($newFileName);
+                        } catch (FileException $e) {
+                            $this->addFlash('error', 'Ha habido un problema con tu archivo');
+
+                            return $this->redirectToRoute('userRegistration');
+                        }
+                    } catch (InvalidArgumentException  $e) {
+                        $this->addFlash('error', 'No se pudo determinar el tipo archivo.');
+
+                        return $this->redirectToRoute('userRegistration');
+                    }
+                }
+
+                $plaintextPassword = $registration_form->get('password')->getData();
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $plaintextPassword
+                );
+                $user->setPassword($hashedPassword);
+                $user->setRoles(['ROLE_USER']);
+                $this->em->persist($user);
+                $this->em->flush();
+
+                $this->addFlash('success', '¡Registro exitoso!');
+            }
         }
 
         return $this->render('user/index.html.twig', [
