@@ -95,7 +95,7 @@ class UserController extends AbstractController
             5
         );
 
-        return $this->render('favorite/index.html.twig', [
+        return $this->render('user/favorites.html.twig', [
             'favorites' => $favoritesPaginated,
         ], $response);
     }
