@@ -60,7 +60,6 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/index.js') }}"></script>
     <script>
       $('.custom-file-input').on('change', function (event) {
         var inputFile = event.currentTarget
