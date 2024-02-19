@@ -57,7 +57,16 @@ class UserController extends AbstractController
     {
         $user = $this->getUser();
 
-        $posts = $this->em->getRepository(Post::class)->findBy(['user' => $user]);
+        $repository = $this->em->getRepository(Post::class);
+
+        $query = $repository->createQueryBuilder('p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            // Ordenar por fecha de creación descendente
+            ->orderBy('p.creation_date', 'DESC')
+            ->getQuery();
+
+        $posts = $query->getResult();
 
         // Configuración de caché para evitar que la página se almacene en caché
         $response = new Response();
