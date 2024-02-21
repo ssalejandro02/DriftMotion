@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container mt-5 mb-5">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-end">
+                    {% if user is not null %}
+                        <div class="btn-group mr-2">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">Cambiar Contraseña</button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Editar Perfil</button>
+                        </div>
+                    {% endif %}
+                </div>
+                <hr>
+                {% if user is not null %}
+                    <div class="row mt-3">
+                        <div class="col-md-4 text-center">
+                            {% if user.photo %}
+                                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="{{ user.username }}" class="img-fluid">
+                            {% else %}
+                                <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ user.username }}" class="img-fluid">
+                            {% endif %}
+                            <br>
+                        </div>
+                        <div class="col-md-8">
+                            <h3>{{ user.username }}</h3>
+                            <p class="text-muted">Contacto: {{ user.email }}</p>
+                            {% if user.description %}
+                                <p>{{ user.description | nl2br | raw }}</p>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <p>Aún no cuentas con una descripción</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <p>No hay usuario autenticado.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Editar Perfil</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                        <form action="{{ path('userProfileEdit') }}" method="post" enctype="multipart/form-data">
+                            {{ form_row(editForm.username, {'label': 'Nombre de usuario'}) }}
+                            {{ form_row(editForm.email, {'label': 'Correo electrónico'}) }}
+                            {{ form_row(editForm.photo, {'label': 'Cambiar Foto'}) }}
+                            {{ form_row(editForm.description, {'label': 'Descripción'}) }}
+                            <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+      $('.custom-file-input').on('change', function (event) {
+        var inputFile = event.currentTarget
+        $(inputFile).parent()
+          .find('.custom-file-label')
+          .html(inputFile.files[0].name)
+      })
+
+      // Si el registro es correcto
+      {% if app.flashes('success') %}
+      Swal.fire({
+        icon: 'success',
+        title: '¡Perfil actualizado!',
+        text: 'Tu perfil ha sido actualizado con éxito',
+        timer: 2500,
+        showConfirmButton: false,
+      })
+      {% endif %}
+
+      // Errores
+      {% for flashMessage in app.flashes('error') %}
+      $(document).ready(function () {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: '{{ flashMessage }}',
+          timer: 2500,
+          showConfirmButton: false,
+        })
+      })
+      {% endfor %}
+    </script>
+{% endblock %}
