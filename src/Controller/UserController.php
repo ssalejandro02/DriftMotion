@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Post;
 use App\Entity\Favorite;
+use App\Form\ProfileEditType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -101,6 +103,98 @@ class UserController extends AbstractController
 
         return $this->render('user/index.html.twig', [
             'registration_form' => $registration_form->createView(),
+        ]);
+    }
+
+    #[Route('/user/profile', name: 'userProfile')]
+    public function userProfile(): Response
+    {
+        $user = $this->getUser();
+
+        $editForm = $this->createForm(ProfileEditType::class, $user);
+
+        return $this->render('user/profile.html.twig', [
+            'user'     => $user,
+            'editForm' => $editForm->createView(),
+        ]);
+    }
+
+    #[Route('/user/profile/edit', name: 'userProfileEdit')]
+    public function editProfile(Request $request, SluggerInterface $slugger, SessionInterface $session): Response
+    {
+        $user = $this->getUser();
+        $originalEmail = $user->getEmail();
+        $originalUsername = $user->getUsername();
+        $originalPhoto = $user->getPhoto();
+
+        $editForm = $this->createForm(ProfileEditType::class, $user);
+
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $file = $editForm->get('photo')->getData();
+
+            // Verifica si se ha cargado un nuevo archivo
+            if ($file) {
+                $mimeTypes = new MimeTypes();
+                $allowedImageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+                try {
+                    $fileMimeType = $mimeTypes->guessMimeType($file->getRealPath());
+
+                    if (!in_array($fileMimeType, $allowedImageMimeTypes)) {
+                        $this->addFlash('error', 'Solo se permiten archivos de imagen (JPEG, PNG, GIF).');
+                    }
+
+                    $originalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFileName = $slugger->slug($originalFileName);
+                    $newFileName = $safeFileName . '-' . uniqid() . '.' . $file->guessExtension();
+
+                    try {
+                        $file->move(
+                            $this->getParameter('photos_directory'),
+                            $newFileName
+                        );
+
+                        $user->setPhoto($newFileName);
+                    } catch (FileException $e) {
+                        $this->addFlash('error', 'Ha habido un problema con tu archivo');
+                    }
+                } catch (InvalidArgumentException  $e) {
+                    $this->addFlash('error', 'No se pudo determinar el tipo archivo.');
+                }
+            } else {
+                $user->setPhoto($originalPhoto);
+            }
+
+            $existingUserByEmail = $this->em->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+
+            if ($existingUserByEmail && $existingUserByEmail->getId() !== $user->getId()) {
+                $this->addFlash('error', 'El correo electrónico ya está en uso por otro usuario.');
+                $user->setEmail($originalEmail);
+                $editForm->get('email')->setData($originalEmail);
+            }
+
+            $existingUserByUsername = $this->em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
+
+            if ($existingUserByEmail && $existingUserByUsername->getId() !== $user->getId()) {
+                $this->addFlash('error', 'El nombre de usuario ya está en uso por otro usuario.');
+                $user->setUsername($originalUsername);
+                $editForm->get('username')->setData($originalUsername);
+            }
+
+            // Tu código existente para verificar correos electrónicos y nombres de usuario duplicados
+
+            if (!$session->getFlashBag()->has('error')) {
+                $this->em->persist($user);
+                $this->em->flush();
+                $this->addFlash('success', '¡Perfil actualizado con éxito!');
+            }
+        }
+
+        return $this->render('user/profile.html.twig', [
+            'user'     => $user,
+            'editForm' => $editForm->createView(),
         ]);
     }
 
