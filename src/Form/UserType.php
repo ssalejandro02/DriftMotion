@@ -22,12 +22,12 @@ class UserType extends AbstractType
             ->add('email', EmailType::class, [
                 'constraints' => [
                     new Email(['message' => 'Por favor, ingresa un correo electrónico válido.']),
-                    new NotBlank(['message' => 'El campo de correo electrónico no puede estar en blanco.']),
+                    new NotBlank(['message' => 'El campo de correo electrónico no puede estar en blanco']),
                 ],
             ])
             ->add('username', TextType::class, [
                 'constraints' => [
-                    new NotBlank(['message' => 'Por favor, ingresa un nombre de usuario.']),
+                    new NotBlank(['message' => 'Por favor, ingresa un nombre de usuario']),
                 ],
             ])
             ->add('password', PasswordType::class)
@@ -35,7 +35,7 @@ class UserType extends AbstractType
                 // No mapea este campo a una propiedad del objeto
                 'mapped'      => false,
                 'constraints' => [
-                    new NotBlank(['message' => 'Por favor, repite la contraseña.']),
+                    new NotBlank(['message' => 'Por favor, repite la contraseña']),
                 ],
             ])
             ->add('photo', FileType::class, [
