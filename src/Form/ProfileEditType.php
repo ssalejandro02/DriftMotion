@@ -12,6 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ProfileEditType extends AbstractType
 {
@@ -19,15 +20,21 @@ class ProfileEditType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, [
-                'label' => 'Nombre de usuario',
+                'label' => 'Nombre De Usuario',
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Correo electrónico',
+                'label' => 'Correo Electrónico',
             ])
             ->add('photo', FileType::class, [
                 'label'      => 'Cambiar Foto',
                 'required'   => false,
                 'data_class' => null,
+            ])
+            ->add('removePhoto', CheckboxType::class, [
+                'label'    => 'Eliminar Foto De Perfil',
+                'required' => false,
+                // No se mapea en la entidad
+                'mapped'   => false,
             ])
             ->add('description', TextareaType::class, [
                 'label'    => 'Descripción',
@@ -38,7 +45,7 @@ class ProfileEditType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'        => User::class,
+            'data_class' => User::class,
         ]);
     }
 }

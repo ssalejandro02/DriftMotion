@@ -134,8 +134,11 @@ class UserController extends AbstractController
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $file = $editForm->get('photo')->getData();
 
-            // Verifica si se ha cargado un nuevo archivo
-            if ($file) {
+            if ($editForm->get('removePhoto')->getData()) {
+
+                $user->setPhoto(null);
+            } elseif ($file) {
+
                 $mimeTypes = new MimeTypes();
                 $allowedImageMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
@@ -172,7 +175,6 @@ class UserController extends AbstractController
             if ($existingUserByEmail && $existingUserByEmail->getId() !== $user->getId()) {
                 $this->addFlash('error', 'El correo electrónico ya está en uso por otro usuario.');
                 $user->setEmail($originalEmail);
-                $editForm->get('email')->setData($originalEmail);
             }
 
             $existingUserByUsername = $this->em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
@@ -180,10 +182,7 @@ class UserController extends AbstractController
             if ($existingUserByEmail && $existingUserByUsername->getId() !== $user->getId()) {
                 $this->addFlash('error', 'El nombre de usuario ya está en uso por otro usuario.');
                 $user->setUsername($originalUsername);
-                $editForm->get('username')->setData($originalUsername);
             }
-
-            // Tu código existente para verificar correos electrónicos y nombres de usuario duplicados
 
             if (!$session->getFlashBag()->has('error')) {
                 $this->em->persist($user);
@@ -192,9 +191,11 @@ class UserController extends AbstractController
             }
         }
 
+        $newEditForm = $this->createForm(ProfileEditType::class, $user);
+
         return $this->render('user/profile.html.twig', [
             'user'     => $user,
-            'editForm' => $editForm->createView(),
+            'editForm' => $newEditForm->createView(),
         ]);
     }
 
