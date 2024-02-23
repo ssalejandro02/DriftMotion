@@ -29,13 +29,13 @@
                     <div class="row mt-3">
                         <div class="col-md-4 text-center">
                             {% if user.photo %}
-                                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="{{ user.username }}" class="img-fluid">
+                                <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="{{ user.username }}" class="img-fluid profilePhoto">
                             {% else %}
-                                <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ user.username }}" class="img-fluid">
+                                <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ user.username }}" class="img-fluid profilePhoto">
                             {% endif %}
                             <br>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-8 mt-2 text-center text-md-left">
                             <h3>{{ user.username }}</h3>
                             <p class="text-muted">Contacto: {{ user.email }}</p>
                             {% if user.description %}
