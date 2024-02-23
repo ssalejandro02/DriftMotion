@@ -55,6 +55,28 @@
     </div>
 
     <!-- Edit Profile Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Cambiar contraseña</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                        <form action="{{ path('userChangePassword') }}" method="post" enctype="multipart/form-data" id="changePasswordForm">
+                            {{ form_widget(passwordForm) }}
+                            <button type="submit" class="btn btn-primary btn-block">Confirmar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -86,16 +108,43 @@
           .html(inputFile.files[0].name)
       })
 
-      // Si el registro es correcto
-      {% if app.flashes('success') %}
-      Swal.fire({
-        icon: 'success',
-        title: '¡Perfil actualizado!',
-        text: 'Tu perfil ha sido actualizado con éxito',
-        timer: 2500,
-        showConfirmButton: false,
+      $(document).ready(function () {
+        // Validación de contraseña repetida
+        $('#{{ passwordForm.password.vars.id }}').on('input', function () {
+          var password = $(this).val();
+          var repeatPassword = $('#{{ passwordForm.password_repeat.vars.id }}').val();
+
+          if (password !== repeatPassword) {
+            $('#{{ passwordForm.password_repeat.vars.id }}').get(0).setCustomValidity('Las contraseñas no coinciden.');
+          } else {
+            $('#{{ passwordForm.password_repeat.vars.id }}').get(0).setCustomValidity('');
+          }
+        });
+
+        $('#{{ passwordForm.password_repeat.vars.id }}').on('input', function () {
+          var password = $('#{{ passwordForm.password.vars.id }}').val();
+          var repeatPassword = $(this).val();
+
+          if (password !== repeatPassword) {
+            $(this).get(0).setCustomValidity('Las contraseñas no coinciden.');
+          } else {
+            $(this).get(0).setCustomValidity('');
+          }
+        });
+      });
+
+      // Success
+      {% for flashMessage in app.flashes('success') %}
+      $(document).ready(function () {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Perfil actualizado!',
+          text: '{{ flashMessage }}',
+          timer: 2500,
+          showConfirmButton: false,
+        })
       })
-      {% endif %}
+      {% endfor %}
 
       // Errores
       {% for flashMessage in app.flashes('error') %}
