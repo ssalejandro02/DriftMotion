@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Perfil{% endblock %}
+
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container mt-5 mb-5">
+        <div class="card shadow">
+            <div class="card-body">
+                {% if userDetails is not null %}
+                    <div class="row mt-3">
+                        <div class="col-md-4 text-center">
+                            {% if userDetails.photo %}
+                                <img src="{{ asset('uploads/photos/' ~ userDetails.photo) }}" alt="{{ userDetails.username }}" class="img-fluid profilePhoto">
+                            {% else %}
+                                <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ userDetails.username }}" class="img-fluid profilePhoto">
+                            {% endif %}
+                            <br>
+                        </div>
+                        <div class="col-md-8 mt-2 text-center text-md-left">
+                            <h3>{{ userDetails.username }}</h3>
+                            <p class="text-muted">Contacto: {{ userDetails.email }}</p>
+                            {% if userDetails.description %}
+                                <p>{{ userDetails.description | nl2br | raw }}</p>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <p>El usuario no cuenta aún con descripción</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <p>No se ha encontrado el usuario</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

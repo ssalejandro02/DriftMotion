@@ -256,6 +256,15 @@ class UserController extends AbstractController
         ]);
     }
 
+    #[Route('/user/details/{id}', name: 'userDetails')]
+    public function userDetails($id): Response
+    {
+        $userData = $this->em->getRepository(User::class)->findOneBy(['id' => $id]);
+
+        return $this->render('user/details.html.twig', [
+            'userDetails' => $userData,
+        ]);
+    }
 
     #[Route('/user/posts', name: 'userPosts')]
     public function userPosts(Request $request, PaginatorInterface $paginator): Response

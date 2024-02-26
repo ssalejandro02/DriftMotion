@@ -233,3 +233,11 @@ footer {
     height: 40px;
     object-fit: cover;
 }
+
+.user-card-link {
+    color: inherit;
+}
+
+.user-card {
+    color: black;
+}

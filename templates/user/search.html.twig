@@ -31,22 +31,24 @@
                             </div>
                         {% else %}
                             {% for user in users %}
-                                <div class="card mt-2">
-                                    <div class="card-body position-relative">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div class="d-flex align-items-center">
-                                                {% if user.photo %}
-                                                    <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="{{ user.email }}" class="user-photo mr-3 profilePhotoComment">
-                                                {% else %}
-                                                    <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ user.email }}" class="user-photo mr-3 profilePhotoComment">
-                                                {% endif %}
-                                                <div>
-                                                    <h5 class="card-title mb-0">{{ user.username }}</h5>
+                                <a href="{{ path('userDetails', {'id': user.id}) }}" class="text-decoration-none user-card-link">
+                                    <div class="card mt-2">
+                                        <div class="card-body position-relative user-card">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    {% if user.photo %}
+                                                        <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="{{ user.email }}" class="user-photo mr-3 profilePhotoComment">
+                                                    {% else %}
+                                                        <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ user.email }}" class="user-photo mr-3 profilePhotoComment">
+                                                    {% endif %}
+                                                    <div>
+                                                        <h5 class="card-title mb-0">{{ user.username }}</h5>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             {% endfor %}
                         {% endif %}
                     </div>

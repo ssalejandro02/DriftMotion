@@ -121,28 +121,31 @@
                         <hr>
                         {% if comments is not empty %}
                             {% for comment in comments %}
-                                <div class="card mb-3">
-                                    <div class="card-body position-relative">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div class="d-flex align-items-center">
-                                                {% if comment.user.photo %}
-                                                    <img src="{{ asset('uploads/photos/' ~ comment.user.photo) }}" alt="{{ comment.user.email }}" class="user-photo mr-3 profilePhotoComment">
-                                                {% else %}
-                                                    <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ comment.user.email }}" class="user-photo mr-3 profilePhotoComment">
-                                                {% endif %}
-                                                <div>
-                                                    <h5 class="card-title mb-0">{{ comment.user.email }}</h5>
-                                                    <p class="card-text">{{ comment.comment }}</p>
+                                <a href="{{ path('userDetails', {'id': comment.user.id}) }}" class="text-decoration-none user-card-link">
+
+                                    <div class="card mb-3">
+                                        <div class="card-body position-relative user-card">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    {% if comment.user.photo %}
+                                                        <img src="{{ asset('uploads/photos/' ~ comment.user.photo) }}" alt="{{ comment.user.email }}" class="user-photo mr-3 profilePhotoComment">
+                                                    {% else %}
+                                                        <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ comment.user.email }}" class="user-photo mr-3 profilePhotoComment">
+                                                    {% endif %}
+                                                    <div>
+                                                        <h5 class="card-title mb-0">{{ comment.user.email }}</h5>
+                                                        <p class="card-text">{{ comment.comment }}</p>
+                                                    </div>
                                                 </div>
+                                                {% if app.user == comment.user %}
+                                                    <a class="text-danger delete_comment" data-url="{{ path('deleteComment', {'post_id': post.id, 'id': comment.id}) }}">
+                                                        <i class="fa fa-trash-o"></i>
+                                                    </a>
+                                                {% endif %}
                                             </div>
-                                            {% if app.user == comment.user %}
-                                                <a class="text-danger delete_comment" data-url="{{ path('deleteComment', {'post_id': post.id, 'id': comment.id}) }}">
-                                                    <i class="fa fa-trash-o"></i>
-                                                </a>
-                                            {% endif %}
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             {% endfor %}
                             <div class="row">
                                 <div class="col-md-12 d-flex justify-content-center">
