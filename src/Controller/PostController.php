@@ -157,7 +157,7 @@ class PostController extends AbstractController
 
             return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente']);
         } catch (\Exception $e) {
-            return new JsonResponse(['success' => false, 'message' => 'Hubo un problema al intentar eliminar el post.']);
+            return new JsonResponse(['success' => false, 'message' => 'Hubo un problema al intentar eliminar el post']);
         }
     }
 
