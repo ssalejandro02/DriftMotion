@@ -167,6 +167,8 @@ class UserController extends AbstractController
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $file = $editForm->get('photo')->getData();
+            // Antes de cambiar la foto, guarda la ruta de la foto actual
+            $originalPhotoPath = $this->getParameter('photos_directory') . '/' . $originalPhoto;
 
             if ($editForm->get('removePhoto')->getData()) {
 
@@ -219,18 +221,17 @@ class UserController extends AbstractController
             }
 
             if (!$session->getFlashBag()->has('error')) {
+                // Antes de hacer flush en la base de datos, verifica y elimina la foto anterior si existe
+                if (($file || $editForm->get('removePhoto')->getData() ) &&
+                    !empty($originalPhoto) && file_exists($originalPhotoPath)) {
+                    unlink($originalPhotoPath);
+                }
+
                 $this->em->persist($user);
                 $this->em->flush();
                 $this->addFlash('success', 'Perfil actualizado con éxito');
             }
         }
-
-        /*$newEditForm = $this->createForm(ProfileEditType::class, $user);
-
-        return $this->render('user/profile.html.twig', [
-            'user'     => $user,
-            'editForm' => $newEditForm->createView(),
-        ]);*/
 
         return $this->redirectToRoute('userProfile');
 
