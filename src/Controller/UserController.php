@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\Exception\InvalidArgumentException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserController extends AbstractController
 {
@@ -254,5 +256,23 @@ class UserController extends AbstractController
         return $this->render('user/favorites.html.twig', [
             'favorites' => $favoritesPaginated,
         ], $response);
+    }
+
+    #[Route('/user/deleteAccount', name: 'deleteAccount')]
+    public function deleteAccount(Request $request, TokenStorageInterface $tokenStorage): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if ($user) {
+            // Desconecta al usuario antes de eliminarlo de la base de datos
+            $tokenStorage->setToken(null);
+
+            $this->em->remove($user);
+            $this->em->flush();
+
+            return $this->json(['success' => true, 'message' => '¡Cuenta eliminada con éxito!',]);
+        } else {
+            return $this->json(['success' => false, 'message' => 'El usuario no está autenticado',]);
+        }
     }
 }

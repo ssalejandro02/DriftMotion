@@ -197,3 +197,50 @@ $('.delete_comment').click(function () {
     }
   })
 })
+
+$('#delete_account').click(function () {
+  var deleteAccountUrl = $(this).data('url')
+
+  Swal.fire({
+    title: '¿Deseas eliminar tu cuenta?',
+    showCancelButton: true,
+    cancelButtonText: 'Cancelar',
+    confirmButtonText: 'Eliminar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: deleteAccountUrl,
+        type: 'POST',
+        dataType: 'json',
+        success: function (response) {
+          if (response.success) {
+            Swal.fire({
+              title: 'Cuenta Eliminada',
+              text: response.message,
+              icon: 'success',
+              timer: 2500,
+              showConfirmButton: false,
+            }).then(() => {
+              window.location.href = '/'
+            })
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: response.message,
+              icon: 'error',
+            })
+          }
+        },
+        error: function () {
+          Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema al intentar eliminar la cuenta',
+            icon: 'error',
+            timer: 2500,
+            showConfirmButton: false,
+          })
+        },
+      })
+    }
+  })
+})
