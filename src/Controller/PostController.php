@@ -134,16 +134,31 @@ class PostController extends AbstractController
     #[Route('/post/delete/{id}', name: 'postDelete')]
     public function deletePost($id): JsonResponse
     {
-        $post = $this->em->getRepository(Post::class)->find($id);
+        try {
+            $post = $this->em->getRepository(Post::class)->find($id);
 
-        if (!$post) {
-            return new JsonResponse(['success' => false, 'message' => 'No se encontró el post con el id: ' . $id]);
+            if (!$post) {
+                return new JsonResponse(['success' => false, 'message' => 'No se encontró el post con el id: ' . $id]);
+            }
+
+            $photoFileName = $post->getFile();
+
+            $this->em->remove($post);
+            $this->em->flush();
+
+            // Elimino la foto del post
+            if ($photoFileName) {
+                $photoFilePath = $this->getParameter('files_directory') . '/' . $photoFileName;
+
+                if (file_exists($photoFilePath)) {
+                    unlink($photoFilePath);
+                }
+            }
+
+            return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['success' => false, 'message' => 'Hubo un problema al intentar eliminar el post.']);
         }
-
-        $this->em->remove($post);
-        $this->em->flush();
-
-        return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente']);
     }
 
     #[Route('/post/details/{id}/addFavorite', name: 'postAddFavorite')]
