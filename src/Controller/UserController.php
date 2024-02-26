@@ -167,7 +167,8 @@ class UserController extends AbstractController
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $file = $editForm->get('photo')->getData();
-            // Antes de cambiar la foto, guarda la ruta de la foto actual
+
+            // Antes de cambiar la foto, guardo la ruta de la foto actual
             $originalPhotoPath = $this->getParameter('photos_directory') . '/' . $originalPhoto;
 
             if ($editForm->get('removePhoto')->getData()) {
