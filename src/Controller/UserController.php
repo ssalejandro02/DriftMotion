@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Post;
 use App\Entity\Favorite;
+use App\Form\ChangePasswordType;
 use App\Form\ProfileEditType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Mime\MimeTypes;
@@ -114,11 +116,41 @@ class UserController extends AbstractController
         $user = $this->getUser();
 
         $editForm = $this->createForm(ProfileEditType::class, $user);
+        $passwordForm = $this->createForm(ChangePasswordType::class, $user);
 
         return $this->render('user/profile.html.twig', [
             'user'     => $user,
             'editForm' => $editForm->createView(),
+            'passwordForm' => $passwordForm->createView(),
         ]);
+    }
+
+    #[Route('/user/profile/changePassword', name: 'userChangePassword')]
+    public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, AuthenticationUtils $authenticationUtils): Response
+    {
+        $user = $this->getUser();
+        $passwordForm = $this->createForm(ChangePasswordType::class, $user);
+        $passwordForm->handleRequest($request);
+
+        if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
+
+            $plaintextPassword = $passwordForm->get('password')->getData();
+            $hashedPassword = $passwordHasher->hashPassword(
+                $user,
+                $plaintextPassword
+            );
+
+            $user->setPassword($hashedPassword);
+
+            $this->em->persist($user);
+            $this->em->flush();
+
+            $this->addFlash('success', '¡Contraseña actualizada con éxito!');
+
+            return $this->redirectToRoute('userProfile');
+        }
+
+        return $this->redirectToRoute('userProfile');
     }
 
     #[Route('/user/profile/edit', name: 'userProfileEdit')]
@@ -193,12 +225,15 @@ class UserController extends AbstractController
             }
         }
 
-        $newEditForm = $this->createForm(ProfileEditType::class, $user);
+        /*$newEditForm = $this->createForm(ProfileEditType::class, $user);
 
         return $this->render('user/profile.html.twig', [
             'user'     => $user,
             'editForm' => $newEditForm->createView(),
-        ]);
+        ]);*/
+
+        return $this->redirectToRoute('userProfile');
+
     }
 
     #[Route('/user/posts', name: 'userPosts')]
