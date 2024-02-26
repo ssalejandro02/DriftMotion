@@ -28,7 +28,7 @@ class InteractionController extends AbstractController
         $post = $this->em->getRepository(Post::class)->find($post_id);
 
         if (!$post) {
-            throw $this->createNotFoundException('El post no existe.');
+            throw $this->createNotFoundException('El post no existe');
         }
 
         $interaction = new Interaction();
@@ -62,6 +62,6 @@ class InteractionController extends AbstractController
         $this->em->remove($comment);
         $this->em->flush();
 
-        return new JsonResponse(['success' => true, 'message' => 'Comentario eliminado correctamente.']);
+        return new JsonResponse(['success' => true, 'message' => 'Comentario eliminado correctamente']);
     }
 }

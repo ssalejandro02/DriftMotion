@@ -143,7 +143,7 @@ class PostController extends AbstractController
         $this->em->remove($post);
         $this->em->flush();
 
-        return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente.']);
+        return new JsonResponse(['success' => true, 'message' => 'El post fue eliminado exitosamente']);
     }
 
     #[Route('/post/details/{id}/addFavorite', name: 'postAddFavorite')]

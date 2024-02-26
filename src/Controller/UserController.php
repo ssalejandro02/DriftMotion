@@ -48,9 +48,9 @@ class UserController extends AbstractController
         $existingUserByUsername = $this->em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
 
         if ($existingUserByEmail) {
-            $this->addFlash('error', '¡El correo electrónico ya está registrado!');
+            $this->addFlash('error', 'El correo electrónico ya está registrado');
         } elseif ($existingUserByUsername) {
-            $this->addFlash('error', '¡El nombre de usuario ya está registrado!');
+            $this->addFlash('error', 'El nombre de usuario ya está registrado');
         } else {
             if ($registration_form->isSubmitted() && $registration_form->isValid()) {
                 $file = $registration_form->get('photo')->getData();
@@ -101,7 +101,7 @@ class UserController extends AbstractController
                 $this->em->persist($user);
                 $this->em->flush();
 
-                $this->addFlash('success', '¡Registro exitoso!');
+                $this->addFlash('success', 'Registro exitoso');
             }
         }
 
@@ -145,7 +145,7 @@ class UserController extends AbstractController
             $this->em->persist($user);
             $this->em->flush();
 
-            $this->addFlash('success', '¡Contraseña actualizada con éxito!');
+            $this->addFlash('success', 'Contraseña actualizada con éxito');
 
             return $this->redirectToRoute('userProfile');
         }
@@ -221,7 +221,7 @@ class UserController extends AbstractController
             if (!$session->getFlashBag()->has('error')) {
                 $this->em->persist($user);
                 $this->em->flush();
-                $this->addFlash('success', '¡Perfil actualizado con éxito!');
+                $this->addFlash('success', 'Perfil actualizado con éxito');
             }
         }
 
@@ -305,7 +305,7 @@ class UserController extends AbstractController
             $this->em->remove($user);
             $this->em->flush();
 
-            return $this->json(['success' => true, 'message' => '¡Cuenta eliminada con éxito!',]);
+            return $this->json(['success' => true, 'message' => 'Cuenta eliminada con éxito',]);
         } else {
             return $this->json(['success' => false, 'message' => 'El usuario no está autenticado',]);
         }
