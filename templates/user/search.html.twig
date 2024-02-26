@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - Buscar{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container my-2">
+        <div class="row">
+            <div class="col-md-12 my-2">
+                <div class="p-3 border bg-light text-center">
+                    <h2 class="my-3 font-weight-bold"><u>Buscar Usuarios</u></h2>
+                </div>
+            </div>
+            <div class="col-md-12 my-2">
+                <div class="p-5 border bg-white">
+
+                    {# Display the search form #}
+                    <form id="searchForm" class="form-inline">
+                        <div class="input-group w-100">
+                            <input type="text" class="form-control" id="searchTerm" name="q" value="{{ searchTerm }}" placeholder="Buscar" aria-label="Buscar" aria-describedby="button-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" id="button-addon2">Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="userList">
+                        {% if users is empty and searchTerm > 0 %}
+                            <div class="alert alert-warning mt-3" role="alert">
+                                No hay resultados
+                            </div>
+                        {% else %}
+                            {% for user in users %}
+                                <div class="card mt-2">
+                                    <div class="card-body position-relative">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div class="d-flex align-items-center">
+                                                {% if user.photo %}
+                                                    <img src="{{ asset('uploads/photos/' ~ user.photo) }}" alt="{{ user.email }}" class="user-photo mr-3 profilePhotoComment">
+                                                {% else %}
+                                                    <img src="{{ asset('img/default_user_photo.png') }}" alt="{{ user.email }}" class="user-photo mr-3 profilePhotoComment">
+                                                {% endif %}
+                                                <div>
+                                                    <h5 class="card-title mb-0">{{ user.username }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+      $(document).ready(function () {
+        // Attach an event listener to the search input
+        $('#searchTerm').on('input', function (e) {
+          e.preventDefault()
+
+          // Get the current input value
+          var searchTerm = $(this).val()
+
+          // Send an AJAX request to the server for real-time search
+          $.ajax({
+            url: '{{ path('userSearch') }}',
+            type: 'GET',
+            data: { q: searchTerm },
+            success: function (data) {
+              // Update the user list with the response from the server
+              $('#userList').html($(data).find('#userList').html())
+            }
+          })
+        })
+      })
+    </script>
+{% endblock %}

@@ -238,6 +238,25 @@ class UserController extends AbstractController
 
     }
 
+
+    #[Route('/search/users', name: 'userSearch')]
+    public function searchUsers(Request $request): Response
+    {
+        $searchTerm = $request->query->get('q');
+        $users = [];
+
+        if ($searchTerm) {
+            // Lógica para buscar usuarios según $searchTerm
+            $users = $this->em->getRepository(User::class)->findByUsername($searchTerm);
+        }
+
+        return $this->render('user/search.html.twig', [
+            'users' => $users,
+            'searchTerm' => $searchTerm,
+        ]);
+    }
+
+
     #[Route('/user/posts', name: 'userPosts')]
     public function userPosts(Request $request, PaginatorInterface $paginator): Response
     {
