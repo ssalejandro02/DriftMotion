@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -134,6 +135,13 @@ class PostController extends AbstractController
     #[Route('/post/delete/{id}', name: 'postDelete')]
     public function deletePost($id): JsonResponse
     {
+        $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         try {
             $post = $this->em->getRepository(Post::class)->find($id);
 
@@ -166,6 +174,11 @@ class PostController extends AbstractController
     {
         $user = $this->getUser();
 
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $post = $this->em->getRepository(Post::class)->find($id);
 
         if (!$post) {
@@ -192,6 +205,11 @@ class PostController extends AbstractController
     public function removeFavorite(Request $request, $id): JsonResponse
     {
         $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
 
         $post = $this->em->getRepository(Post::class)->find($id);
 

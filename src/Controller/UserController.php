@@ -23,6 +23,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\Exception\InvalidArgumentException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class UserController extends AbstractController
 {
@@ -115,20 +116,32 @@ class UserController extends AbstractController
     {
         $user = $this->getUser();
 
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $editForm = $this->createForm(ProfileEditType::class, $user);
         $passwordForm = $this->createForm(ChangePasswordType::class, $user);
 
         return $this->render('user/profile.html.twig', [
-            'user'     => $user,
-            'editForm' => $editForm->createView(),
+            'user'         => $user,
+            'editForm'     => $editForm->createView(),
             'passwordForm' => $passwordForm->createView(),
         ]);
     }
 
     #[Route('/user/profile/changePassword', name: 'userChangePassword')]
-    public function changePassword(Request $request, UserPasswordHasherInterface $passwordHasher, AuthenticationUtils $authenticationUtils): Response
+    public function changePassword(Request             $request, UserPasswordHasherInterface $passwordHasher,
+                                   AuthenticationUtils $authenticationUtils): Response
     {
         $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $passwordForm = $this->createForm(ChangePasswordType::class, $user);
         $passwordForm->handleRequest($request);
 
@@ -157,6 +170,12 @@ class UserController extends AbstractController
     public function editProfile(Request $request, SluggerInterface $slugger, SessionInterface $session): Response
     {
         $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $originalEmail = $user->getEmail();
         $originalUsername = $user->getUsername();
         $originalPhoto = $user->getPhoto();
@@ -223,8 +242,9 @@ class UserController extends AbstractController
 
             if (!$session->getFlashBag()->has('error')) {
                 // Antes de hacer flush en la base de datos, verifica y elimina la foto anterior si existe
-                if (($file || $editForm->get('removePhoto')->getData() ) &&
-                    !empty($originalPhoto) && file_exists($originalPhotoPath)) {
+                if (($file || $editForm->get('removePhoto')->getData())
+                    && !empty($originalPhoto)
+                    && file_exists($originalPhotoPath)) {
                     unlink($originalPhotoPath);
                 }
 
@@ -235,13 +255,18 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('userProfile');
-
     }
-
 
     #[Route('/search/users', name: 'userSearch')]
     public function searchUsers(Request $request): Response
     {
+        $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $searchTerm = $request->query->get('q');
         $users = [];
 
@@ -251,7 +276,7 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/search.html.twig', [
-            'users' => $users,
+            'users'      => $users,
             'searchTerm' => $searchTerm,
         ]);
     }
@@ -259,6 +284,13 @@ class UserController extends AbstractController
     #[Route('/user/details/{id}', name: 'userDetails')]
     public function userDetails($id, Request $request, PaginatorInterface $paginator): Response
     {
+        $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $userData = $this->em->getRepository(User::class)->findOneBy(['id' => $id]);
 
         $userPosts = $userData->getPosts();
@@ -277,7 +309,7 @@ class UserController extends AbstractController
 
         return $this->render('user/details.html.twig', [
             'userDetails' => $userData,
-            'userPosts'       => $userPostsPaginated,
+            'userPosts'   => $userPostsPaginated,
         ], $response);
     }
 
@@ -285,6 +317,11 @@ class UserController extends AbstractController
     public function userPosts(Request $request, PaginatorInterface $paginator): Response
     {
         $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
 
         $repository = $this->em->getRepository(Post::class);
 
@@ -319,6 +356,11 @@ class UserController extends AbstractController
     {
         $user = $this->getUser();
 
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $favorites = $this->em->getRepository(Favorite::class)->findBy(['user' => $user]);
 
         // Configuración de caché para evitar que la página se almacene en caché
@@ -352,7 +394,7 @@ class UserController extends AbstractController
 
             return $this->json(['success' => true, 'message' => 'Cuenta eliminada con éxito',]);
         } else {
-            return $this->json(['success' => false, 'message' => 'El usuario no está autenticado',]);
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
         }
     }
 }

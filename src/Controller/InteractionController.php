@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class InteractionController extends AbstractController
 {
@@ -25,6 +26,12 @@ class InteractionController extends AbstractController
     public function comment(Request $request, $post_id): FormInterface
     {
         $user = $this->getUser();
+
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+        }
+
         $post = $this->em->getRepository(Post::class)->find($post_id);
 
         if (!$post) {
@@ -51,11 +58,10 @@ class InteractionController extends AbstractController
     #[Route('/post/details/{post_id}/comment/{id}/delete', name: 'deleteComment')]
     public function deleteComment(Interaction $comment)
     {
-        // Verifica si el usuario tiene permiso para eliminar el comentario
-        if ($this->getUser() !== $comment->getUser()) {
-            return new JsonResponse([
-                'success' => false, 'message' => 'No tienes permisos para eliminar este comentario',
-            ]);
+        $user = $this->getUser();
+        // Verificar si el usuario está autenticado
+        if (!$user) {
+            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
         }
 
         // Elimina el comentario
