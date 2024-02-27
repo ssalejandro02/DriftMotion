@@ -257,13 +257,28 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/details/{id}', name: 'userDetails')]
-    public function userDetails($id): Response
+    public function userDetails($id, Request $request, PaginatorInterface $paginator): Response
     {
         $userData = $this->em->getRepository(User::class)->findOneBy(['id' => $id]);
 
+        $userPosts = $userData->getPosts();
+
+        $userPostsPaginated = $paginator->paginate(
+            $userPosts,
+            $request->query->getInt('page', 1),
+            5
+        );
+
+        // Configuración de caché para evitar que la página se almacene en caché
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '');
+
         return $this->render('user/details.html.twig', [
             'userDetails' => $userData,
-        ]);
+            'userPosts'       => $userPostsPaginated,
+        ], $response);
     }
 
     #[Route('/user/posts', name: 'userPosts')]

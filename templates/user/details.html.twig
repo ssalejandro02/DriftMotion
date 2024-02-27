@@ -1,11 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} - Perfil{% endblock %}
+{% block title %}{{ parent() }} - {% if userDetails is not null %} {{ userDetails.username }}{% endif %}{% endblock %}
 
 
 {% block body %}
     {{ parent() }}
-
     <div class="container mt-5 mb-5">
         <div class="card shadow">
             <div class="card-body">
@@ -26,7 +25,7 @@
                                 <p>{{ userDetails.description | nl2br | raw }}</p>
                             {% else %}
                                 <div class="alert alert-warning">
-                                    <p>El usuario no cuenta aún con descripción</p>
+                                    El usuario no cuenta aún con descripción
                                 </div>
                             {% endif %}
                         </div>
@@ -35,10 +34,53 @@
                     <p>No se ha encontrado el usuario</p>
                 {% endif %}
             </div>
+            <hr>
+            <div class="col-md-12 my-2">
+                {% for post in userPosts %}
+                    {% if post.file == null %}
+                        {% set first_row = 'col-md-12' %}
+                        {% set second_row = 'd-none' %}
+                    {% else %}
+                        {% set first_row = 'col-md-9' %}
+                        {% set second_row = 'col-md-3' %}
+                    {% endif %}
+
+                    {# Agrega margen superior solo si es la primera publicación #}
+                    <div class="container{% if loop.first %} mt-4{% endif %}">
+                        <a href="{{ path('postDetails', {id: post.id, url: post.url}) }}"
+                           style="color: black; text-decoration: none;">
+                            <div class="row border custom-shadow">
+                                <div class="{{ first_row }}">
+                                    <div class="my-2 px-1 py-2">
+                                        <h4>
+                                            {{ post.title }}
+                                        </h4>
+                                        <p>Fecha de publicación: {{ post.getCreationDate() | date }}</p>
+                                    </div>
+                                </div>
+                                <div class="{{ second_row }} my-auto">
+                                    {% if post.file != null %}
+                                        <img src="{{ asset('uploads/files/' ~ post.file) }}" alt="Not found"
+                                             width="100%">
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <hr>
+                {% else %}
+                    <div class="alert alert-warning">El usuario no ha publicado ningún post</div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-center">
+                        <div class="navigation">
+                            {% include 'pagination/paginationUserDetailsPosts.html.twig' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
