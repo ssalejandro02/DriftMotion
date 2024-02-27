@@ -39,7 +39,7 @@
                                 <p>{{ user.description | nl2br | raw }}</p>
                             {% else %}
                                 <div class="alert alert-warning">
-                                    <p>Aún no cuentas con una descripción</p>
+                                    Aún no cuentas con una descripción
                                 </div>
                             {% endif %}
                         </div>
@@ -65,7 +65,9 @@
                         </div>
                     </div>
                 {% else %}
-                    <p>No hay usuario autenticado.</p>
+                    <div class="alert alert-warning">
+                        No hay usuario autenticado
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -128,27 +130,27 @@
       $(document).ready(function () {
         // Validación de contraseña repetida
         $('#{{ passwordForm.password.vars.id }}').on('input', function () {
-          var password = $(this).val();
-          var repeatPassword = $('#{{ passwordForm.password_repeat.vars.id }}').val();
+          var password = $(this).val()
+          var repeatPassword = $('#{{ passwordForm.password_repeat.vars.id }}').val()
 
           if (password !== repeatPassword) {
-            $('#{{ passwordForm.password_repeat.vars.id }}').get(0).setCustomValidity('Las contraseñas no coinciden.');
+            $('#{{ passwordForm.password_repeat.vars.id }}').get(0).setCustomValidity('Las contraseñas no coinciden.')
           } else {
-            $('#{{ passwordForm.password_repeat.vars.id }}').get(0).setCustomValidity('');
+            $('#{{ passwordForm.password_repeat.vars.id }}').get(0).setCustomValidity('')
           }
-        });
+        })
 
         $('#{{ passwordForm.password_repeat.vars.id }}').on('input', function () {
-          var password = $('#{{ passwordForm.password.vars.id }}').val();
-          var repeatPassword = $(this).val();
+          var password = $('#{{ passwordForm.password.vars.id }}').val()
+          var repeatPassword = $(this).val()
 
           if (password !== repeatPassword) {
-            $(this).get(0).setCustomValidity('Las contraseñas no coinciden.');
+            $(this).get(0).setCustomValidity('Las contraseñas no coinciden.')
           } else {
-            $(this).get(0).setCustomValidity('');
+            $(this).get(0).setCustomValidity('')
           }
-        });
-      });
+        })
+      })
 
       // Success
       {% for flashMessage in app.flashes('success') %}
