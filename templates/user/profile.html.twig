@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <!-- Edit Profile Modal -->
+    <!-- Edit Password Modal -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -86,7 +86,7 @@
                 <div class="modal-body">
                     <div class="modal-body">
                         <form action="{{ path('userChangePassword') }}" method="post" enctype="multipart/form-data" id="changePasswordForm">
-                            {{ form_widget(passwordForm) }}
+                            {{ form_widget(passwordForm, {'attr': {'autocomplete': 'off'}}) }}
                             <button type="submit" class="btn btn-primary btn-block">Confirmar</button>
                         </form>
                     </div>
@@ -108,7 +108,7 @@
                 <div class="modal-body">
                     <div class="modal-body">
                         <form action="{{ path('userProfileEdit') }}" method="post" enctype="multipart/form-data">
-                            {{ form_widget(editForm) }}
+                            {{ form_widget(editForm, {'attr': {'autocomplete': 'off'}}) }}
                             <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
                         </form>
                     </div>

@@ -23,7 +23,7 @@
                         {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                             <div id="collapseOne" class="collapse p-3 formPost" aria-labelledby="headingOne"
                                  data-parent="#accordion">
-                                {{ form_start(form) }}
+                                {{ form_start(form, {'attr': {'autocomplete': 'off'}}) }}
                                 <div class="row p-2">
                                     <div class="col-md-6 my-2">
                                         {{ form_widget(form.title, {attr:{'placeholder':'Titulo', 'class':'form-control input-style'}}) }}
