@@ -47,26 +47,7 @@
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa-solid fa-user"></i>
                             </a>
-                            <div class="dropdown-menu text-center mx-auto d-md-none" aria-labelledby="navbarDropdown">
-                                <!-- Mostrar solo en dispositivos móviles (clase d-md-none) -->
-                                <a href="{{ path('userProfile') }}" class="dropdown-item">
-                                    <i class="fa-solid fa-user" aria-hidden="true"></i> Perfil
-                                </a>
-                                <a href="{{ path('userSearch') }}" class="dropdown-item">
-                                    <i class="fa-solid fa-search" aria-hidden="true"></i> Buscar
-                                </a>
-                                <a href="{{ path('userPosts') }}" class="dropdown-item">
-                                    <i class="fa fa-clipboard" aria-hidden="true"></i> Mis Posts
-                                </a>
-                                <a href="{{ path('userFavorites') }}" class="dropdown-item">
-                                    <i class="fa-solid fa-star" aria-hidden="true"></i> Favoritos
-                                </a>
-                                <a class="dropdown-item" href="{{ path('logout') }}">
-                                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                                </a>
-                            </div>
-                            <div class="dropdown-menu d-none d-md-block" aria-labelledby="navbarDropdown">
-                                <!-- Mostrar solo en dispositivos de escritorio (clase d-none d-md-block) -->
+                            <div class="dropdown-menu custom-dropdown" aria-labelledby="navbarDropdown">
                                 <a href="{{ path('userProfile') }}" class="dropdown-item">
                                     <i class="fa-solid fa-user" aria-hidden="true"></i> Perfil
                                 </a>
