@@ -27,11 +27,6 @@ class InteractionController extends AbstractController
     {
         $user = $this->getUser();
 
-        // Verificar si el usuario está autenticado
-        if (!$user) {
-            throw new AccessDeniedException('Acceso denegado, no estás autenticado');
-        }
-
         $post = $this->em->getRepository(Post::class)->find($post_id);
 
         if (!$post) {
@@ -48,6 +43,12 @@ class InteractionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Verificar si el usuario está autenticado
+            if (!$user) {
+                throw new AccessDeniedException('Acceso denegado, no estás autenticado');
+            }
+
             $this->em->persist($interaction);
             $this->em->flush();
         }
